@@ -18,6 +18,7 @@ The [DID Method](https://w3c.github.io/did-core/#methods) schema can be consumed
 For example:
 - `did:eosio:4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11:example`
 - `did:eosio:telos:example`
+
 both resolve the same DID from the Telos blockchain.
 
 ## DID Document
@@ -44,11 +45,11 @@ The did resolver takes the EOSIO account name and retreives it's permission data
 }
 ```
 
-Note this uses the [``Verifiable Conditions`](https://github.com/Gimly-Blockchain/verifiable-conditions) type and an TODO key type.
+Note this uses the [`Verifiable Conditions`](https://github.com/Gimly-Blockchain/verifiable-conditions) type and an TODO key type.
 
 ## Building a DID document
 
-The DID document is built by from the account data on the EOSIO blockchain.
+The DID document is built from the account data on the EOSIO blockchain.
 
 ## Resolving a DID document
 
@@ -62,7 +63,7 @@ constructor.
 import { Resolver } from 'did-resolver'
 import { getResolver } from 'eosio-did-resolver'
 
-// You can set an API endpoint to be used by the web3 provider
+// You can set an API endpoint to be used by the API service
 const providerConfig = { apiUrl: 'https://eos.greymass.com' }
 
 // getResolver will return an object with a key/value pair of { "eos": resolver } where resolver is a function used by the generic did resolver.
