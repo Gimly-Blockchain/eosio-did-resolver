@@ -1,6 +1,5 @@
 # EOSIO DID Resolver
 
-
 This library is intended to use EOSIO accounts as fully self managed [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/#decentralized-identifiers-dids) and wrap them in a [DID Document](https://w3c-ccg.github.io/did-spec/#did-documents)
 
 It supports the proposed [Decentralized Identifiers](https://w3c-ccg.github.io/did-spec/) spec from the [W3C Credentials Community Group](https://w3c-ccg.github.io).
@@ -45,7 +44,7 @@ The did resolver takes the EOSIO account name and retreives it's permission data
 }
 ```
 
-Note this uses the [`Verifiable Conditions`](https://github.com/Gimly-Blockchain/verifiable-conditions) type and an TODO key type.
+Note this uses the [`Verifiable Conditions`](https://github.com/Gimly-Blockchain/verifiable-conditions) verification method type.
 
 ## Building a DID document
 
@@ -53,45 +52,45 @@ The DID document is built from the account data on the EOSIO blockchain.
 
 ## Resolving a DID document
 
-The library presents a `resolver()` function that returns a ES6 Promise returning the DID document.
-It is not meant to be used directly but through the
-[`did-resolver`](https://github.com/decentralized-identity/did-resolver) aggregator.
-You can use the `getResolver(conf)` method to produce an entry that can be used with the `Resolver`
-constructor.
+### Resolving from pre-registered EOSIO chains
 
 ```javascript
 import { Resolver } from 'did-resolver'
 import { getResolver } from 'eosio-did-resolver'
 
-// You can set an API endpoint to be used by the API service
-const providerConfig = { apiUrl: 'https://eos.greymass.com' }
+async function resolve() {
+  const didResolver = new Resolver(getResolver())
 
-// getResolver will return an object with a key/value pair of { "eos": resolver } where resolver is a function used by the generic did resolver.
-const eosioDidResolver = getResolver(providerConfig)
-const didResolver = new Resolver(eosioDidResolver)
-
-didResolver.resolve('did:eosio:eos:example').then(doc => console.log)
-
-// You can also use ES7 async/await syntax
-const doc = await didResolver.resolve('did:eosio:eos:example')
+  const didDoc = await didResolver.resolve('did:eosio:eos:example');
+}
 ```
 
-## Multi-network configuration
-
-An example configuration for multi-network DID resolving would look like this:
+### Resolving with a custom EOSIO chain or custom API
 
 ```javascript
-const providerConfig = {
-  networks: [
-    { name: "eos", apiUrl: "https://eos.greymass.com" },
-    { name: "telos", apiUrl: "https://telos.greymass.com" }
-    { name: "4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11", apiUrl: "https://telos.greymass.com" }
-  ]
+import { Resolver } from 'did-resolver'
+import { getResolver } from 'eosio-did-resolver'
+
+async function resolve() {
+
+  // Multiple entries can exist for multiple eosio chains
+  const config = {
+    eos: {
+        chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+        service: [
+            {
+                id: "https://eos.greymass.com",
+                type: [
+                    LinkedDomains,
+                    EosioNodeos
+                ],
+                serviceEndpoint: "https://eos.greymass.com"
+            }
+        ]
+    }
+  }
+  const didResolver = new Resolver(getResolver(config))
+
+  const didDoc = await didResolver.resolve('did:eosio:eos:example');
 }
-
-const eosioDidResolver = getResolver(providerConfig)
 ```
-
-This allows you to resolve ethr-did's of the formats:
-* `did:eosio:eos:example`
-* `did:eosio:4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11:example`
