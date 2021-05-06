@@ -1,27 +1,67 @@
 {
   "name": "eosio-did-resolver",
+  "author": "Jack Tanner <jack@gimly.io>",
   "version": "0.1.0",
+  "license": "Apache-2.0",
   "description": "Resolve Decentralized Identifier (DID) documents based on EOSIO blockchains",
-  "main": "src/index.ts",
-  "scripts": {
-    "test": "node ./test/test.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com-GIMLY:Gimly-Blockchain/eosio-did-resolver.git"
-  },
   "keywords": [
     "eosio",
     "did",
     "ssi",
     "resolver"
   ],
-  "type": "module",
-  "author": "Jack Tanner <jack@gimly.io>",
-  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-GIMLY:Gimly-Blockchain/eosio-did-resolver.git"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "module": "dist/eosio-did-resolver.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/eosio-did-resolver.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/eosio-did-resolver.esm.js",
+      "limit": "10 KB"
+    }
+  ],
   "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.10.2",
     "did-resolver": "^3.1.0",
-    "tslint": "^6.1.3",
+    "husky": "^6.0.0",
+    "size-limit": "^4.10.2",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.2.0",
     "typescript": "^4.2.4"
   }
 }

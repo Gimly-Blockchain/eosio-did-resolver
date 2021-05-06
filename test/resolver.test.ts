@@ -1,10 +1,10 @@
 import { Resolver } from 'did-resolver'
 import { getResolver } from '../src/index';
 
-console.log('Running tests');
+describe('EOSIO resolver', async () => {
+  const resolver = new Resolver(getResolver());
 
-async function main() {
-    const resolver = new Resolver(getResolver());
+  it('works', async () => {
 
     const eoscanadacomDid = 'did:eosio:eos:eoscanadacom';
     console.log('Resolving ' + eoscanadacomDid);
@@ -31,10 +31,10 @@ async function main() {
     const invalidDid = 'did:eosio:eos:aaaaaaaaaaaaaaaaaaaa';
     console.log('Resolving ' + invalidDid);
     try {
-        const invalidDidDocument = await resolver.resolve(invalidDid);
-        console.log('DID Document:', invalidDidDocument);
+      const invalidDidDocument = await resolver.resolve(invalidDid);
+      console.log('DID Document:', invalidDidDocument);
     } catch (e) {
-        console.log('Error resolving DID:', e.what());
+      console.log('Error resolving DID:', e.what());
     }
 
     console.log('');
@@ -42,11 +42,10 @@ async function main() {
     const nonExistantDid = 'did:eosio:telos:aaaaa';
     console.log('Resolving ' + nonExistantDid);
     try {
-        const nonExistantDidDocument = await resolver.resolve(nonExistantDid);
-        console.log('DID Document:', nonExistantDidDocument);
+      const nonExistantDidDocument = await resolver.resolve(nonExistantDid);
+      console.log('DID Document:', nonExistantDidDocument);
     } catch (e) {
-        console.log('Error resolving DID:', e.what());
+      console.log('Error resolving DID:', e.what());
     }
-}
-
-main();
+  });
+});
