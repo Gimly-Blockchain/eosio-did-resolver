@@ -4,23 +4,17 @@
         "service": [
             {
                 "id": "https://eos.greymass.com",
-                "type": [
-                    "LinkedDomains"
-                ],
+                "type": "LinkedDomains",
                 "serviceEndpoint": "https://eos.greymass.com"
             },
             {
                 "id": "https://eos.dfuse.eosnation.io",
-                "type": [
-                    "LinkedDomains"
-                ],
+                "type": "LinkedDomains",
                 "serviceEndpoint": "https://eos.dfuse.eosnation.io"
             },
             {
                 "id": "wss://eos.dfuse.eosnation.io",
-                "type": [
-                    "LinkedDomains"
-                ],
+                "type": "LinkedDomains",
                 "serviceEndpoint": "wss://eos.dfuse.eosnation.io"
             }
         ]
@@ -30,9 +24,7 @@
         "service": [
             {
                 "id": "https://jungle3.cryptolions.io",
-                "type": [
-                    "LinkedDomains"
-                ],
+                "type": "LinkedDomains",
                 "serviceEndpoint": "https://jungle3.cryptolions.io"
             }
         ]
@@ -42,9 +34,7 @@
         "service": [
             {
                 "id": "https://telos.greymass.com",
-                "type": [
-                    "LinkedDomains"
-                ],
+                "type": "LinkedDomains",
                 "serviceEndpoint": "https://telos.greymass.com"
             }
         ]
@@ -54,9 +44,7 @@
         "service": [
             {
                 "id": "https://api.xec.cryptolions.io",
-                "type": [
-                    "LinkedDomains"
-                ],
+                "type": "LinkedDomains",
                 "serviceEndpoint": "https://api.xec.cryptolions.io"
             }
         ]
