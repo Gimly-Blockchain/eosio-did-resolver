@@ -1,6 +1,12 @@
 import { DIDDocument, DIDResolutionOptions, DIDResolutionResult, ParsedDID, Resolver } from "did-resolver"
 const registry = require('../eosio-did-chain-registry.json');
 
+const ERROR_RESULT = {
+    didResolutionMetadata: { error: 'invalidDid' },
+    didDocument: null,
+    didDocumentMetadata: {}
+};
+
 const SUBJECT_ID = `([a-z1-5.]{0,12}[a-z1-5])`;
 const CHAIN_ID   = new RegExp( `^([A-Fa-f0-9]{64}):${SUBJECT_ID}$` )
 const CHAIN_NAME = new RegExp(
@@ -66,6 +72,10 @@ export async function resolve(
     options: DIDResolutionOptions): Promise<DIDResolutionResult> {
 
     const registryEntry = checkDID(parsed);
+
+    if(!registryEntry.chain) {
+        return ERROR_RESULT;
+    }
 
     const eosioAccount = await fetchAccount(registryEntry, did, parsed, options);
 
