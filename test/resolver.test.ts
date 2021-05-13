@@ -12,7 +12,7 @@ describe('EOSIO resolver', async () => {
   })
 
   it('Resolve a jungle testnet DID Document', async () => {
-    const jungleDid = 'did:eosio:eos:jungle:lioninjungle';
+    const jungleDid = 'did:eosio:eos:testnet:jungle:lioninjungle';
     console.log('Resolving ' + jungleDid);
     const jungleDidDocument = await resolver.resolve(jungleDid);
     console.log('DID Document:', jungleDidDocument);
