@@ -1,6 +1,6 @@
 import { DIDDocument, DIDResolutionOptions, DIDResolutionResult, ParsedDID, Resolver } from "did-resolver"
 
-const defaultRegistry: Registry = require('../eosio-did-chain-registry.json');
+const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
 
 const ERROR_RESULT = {
     didResolutionMetadata: { error: 'invalidDid' },
@@ -59,12 +59,12 @@ export async function resolve(
     did: string,
     parsed: ParsedDID,
     didResolver: Resolver,
-    options: DIDResolutionOptions,
-    customRegistry?: Registry): Promise<DIDResolutionResult> {
+    options: DIDResolutionOptions
+    ): Promise<DIDResolutionResult> {
     
     const registry: Registry = {
-        ...defaultRegistry, 
-        ...customRegistry
+        ...eosioChainRegistry,
+        ...options.eosioChainRegistry
     };
 
     const methodId = checkDID(parsed, registry);
