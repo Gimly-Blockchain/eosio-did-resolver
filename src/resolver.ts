@@ -65,6 +65,30 @@ function findServices(service: Array<Service>, type: string): Array<Service> {
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
+function createKeyMethod(baseId: string, i: number, did: string, key: EosioKeyType): VerificationMethod {
+    const keyType = "EcdsaSecp256k1VerificationKey2019"; // TODO support k1, r1 and wa types
+    const keyMethod: VerificationMethod = {
+        id: baseId + "-" + i,
+        controller: did,
+        type: keyType,
+        weight: key.weight
+    }
+    keyMethod.publicKeyJwk = {}; // TODO
+    return keyMethod;
+}
+
+function createAccountMethod(baseId: string, methodId: MethodId, i: number, did: string, account: EosioAccountPermission): VerificationMethod {
+    const delegatedChain = baseId.slice(1, baseId.lastIndexOf(methodId.subject));
+    const accountMethod = {
+        id: baseId + "-" + i,
+        controller: did,
+        type: ["VerifiableCondition", "VerifiableConditionDelegated"],
+        weight: account.weight,
+        delegatedIdUrl: delegatedChain + ":" + account.permission.actor + "#" + account.permission.permission
+    }
+    return accountMethod;
+}
+
 function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioAccountResponse): DIDDocument {
 
     const verificationMethod = [];
@@ -86,27 +110,12 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
 
         let i = 0;
         for (const key of permission.required_auth.keys) {
-            const keyType = "EcdsaSecp256k1VerificationKey2019";
-            const keyMethod: VerificationMethod = {
-                id: baseId + "-" + i,
-                controller: did,
-                type: keyType,
-                weight: key.weight
-            }
-            verificationMethod.push(keyMethod);
+            method.verificationMethod.push(createKeyMethod(baseId, i, did, key));
             i++;
         }
 
         for (const account of permission.required_auth.accounts) {
-            const delegatedChain = baseId.slice(1, baseId.lastIndexOf(methodId.subject));
-            const accountMethod: VerificationMethod = {
-                id: baseId + "-" + i,
-                controller: did,
-                type: ["VerifiableConditionDelegated", "VerifiableConditionDelegated"],
-                weight: account.weight,
-                delegatedIdUrl: delegatedChain + ":" + account.permission.actor + "#" + account.permission.permission
-            }
-            verificationMethod.push(accountMethod);
+            method.verificationMethod.push(createAccountMethod(baseId, methodId, i, did, account));
             i++;
         }
 
@@ -184,17 +193,8 @@ interface EosioAccountResponse {
         parent: string,
         required_auth: {
             threshold: number,
-            keys: [{
-                key: string,
-                weight: number,
-            }],
-            accounts: [{
-                permission: {
-                    permission: string,
-                    actor: string
-                },
-                weight: number
-            }],
+            keys: [EosioKeyType],
+            accounts: [EosioAccountPermission],
             waits: [{
                 wait_sec: number,
                 weight: number
@@ -233,6 +233,19 @@ interface EosioAccountResponse {
         reserved3: string,
     },
     rex_info: any,
+}
+
+declare interface EosioKeyType {
+    key: string,
+    weight: number,
+}
+
+declare interface EosioAccountPermission {
+    permission: {
+        permission: string,
+        actor: string
+    },
+    weight: number
 }
 
 declare interface ExtensibleSchema {
