@@ -1,6 +1,9 @@
 {
   "name": "eosio-did-resolver",
   "author": "Jack Tanner <jack@gimly.io>",
+  "contributors":[
+    "Sebastian Montero <sebastian@m1ghty.io>"
+  ],
   "version": "0.1.0",
   "license": "Apache-2.0",
   "description": "Resolve Decentralized Identifier (DID) documents based on EOSIO blockchains",
