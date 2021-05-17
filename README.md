@@ -10,6 +10,12 @@ See [README.tsdx.md](./README.tsdx.md) for instructions on how to run, build, te
 
 Contributors:
 - Jack Tanner <jack@gimly.io>
+- Jonas Walter
+
+<!-- Make sure images have 75 pixel height -->
+[![Gimly](./assets/gimly.jpg)](https://gimly.io)
+![](./assets/filler.png)
+[![Europechain](./assets/europechain.png)](https://europechain.io)
 
 # EOSIO DID Resolver
 
