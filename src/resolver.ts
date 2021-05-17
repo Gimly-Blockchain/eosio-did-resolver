@@ -1,4 +1,6 @@
 import { DIDDocument, DIDResolutionOptions, DIDResolutionResult, ParsedDID, Resolver } from "did-resolver"
+import fetch from "node-fetch"
+import {JsonRpc} from "eosjs"
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
 
@@ -44,10 +46,26 @@ function checkDID(parsed: ParsedDID, registry: Registry): MethodId | undefined {
 }
 
 async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, options: DIDResolutionOptions): Promise<object> {
-    // Find the API from registered eosio chains or from options
+    const serviceType = 'LinkedDomains'
+    const services = findServices(methodId.chain.service, serviceType)
+    if (services.length == 0) {
+        throw new Error(`No service of type ${serviceType} found for chain ${methodId.chain.chainId}`)
+    }
+    var error = null
+    for (const service of services) {
+        const rpc = new JsonRpc(service.serviceEndpoint, { fetch })
+        try {
+            return await rpc.get_account(methodId.subject)
+        } catch(e) {
+            //Try to fetch from other service in case of error
+            error = e
+        }
+    }
+    throw error;
+}
 
-    // Fetch the eosio account
-    return {};
+function findServices(service: Array<Service>, type: string): Array<Service> {
+    return service.filter((s)=> Array.isArray(s.type) ? s.type.includes(type): s.type == type) 
 }
 
 function createDIDDocument(eosioAccount: any): DIDDocument {
@@ -74,7 +92,17 @@ export async function resolve(
         return ERROR_RESULT;
     }
 
-    const eosioAccount = await fetchAccount(methodId, did, parsed, options);
+    var eosioAccount = null
+    try {
+        eosioAccount = await fetchAccount(methodId, did, parsed, options);
+    } catch(e){
+        return {
+            didResolutionMetadata: { error: 'notFound' },
+            didDocument: null,
+            didDocumentMetadata: {}
+        };
+    }
+    
 
     const didDoc = createDIDDocument(eosioAccount);
 
