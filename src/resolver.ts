@@ -62,7 +62,7 @@ async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, 
 }
 
 function findServices(service: Array<Service>, type: string): Array<Service> {
-    return service.filter((s)=> Array.isArray(s.type) ? s.type.includes(type): s.type == type) 
+    return service.filter((s)=> Array.isArray(s.type) ? s.type.includes(type): s.type === type) 
 }
 
 function createDIDDocument(eosioAccount: any): DIDDocument {
