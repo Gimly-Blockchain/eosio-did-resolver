@@ -11,11 +11,6 @@
                 "id": "https://eos.dfuse.eosnation.io",
                 "type": "LinkedDomains",
                 "serviceEndpoint": "https://eos.dfuse.eosnation.io"
-            },
-            {
-                "id": "wss://eos.dfuse.eosnation.io",
-                "type": "LinkedDomains",
-                "serviceEndpoint": "wss://eos.dfuse.eosnation.io"
             }
         ]
     },
