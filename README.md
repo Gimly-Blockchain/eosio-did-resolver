@@ -16,8 +16,6 @@ Contributors:
 [![Gimly](./assets/gimly.jpg)](https://gimly.io)
 ![](./assets/filler.png)
 [![Europechain](./assets/europechain.png)](https://europechain.io)
-![](./assets/filler.png)
-[![Block One](./assets/blockone.png)](https://block.one)
 
 # EOSIO DID Resolver
 
