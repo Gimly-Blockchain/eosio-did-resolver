@@ -18,7 +18,7 @@ Contributors:
 ![](./assets/filler.png)
 [![Europechain](./assets/europechain.png)](https://europechain.io)
 ![](./assets/filler.png)
-[![Europechain](./assets/digital-scarcity.jpeg)](https://digitalscarcity.io)
+[![Digital Scarcity](./assets/digital-scarcity.jpeg)](https://digitalscarcity.io)
 
 # EOSIO DID Resolver
 
