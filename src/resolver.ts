@@ -1,4 +1,4 @@
-import { DIDResolutionOptions, ParsedDID, Resolver, ServiceEndpoint, DIDResolutionMetadata, DIDDocumentMetadata } from "did-resolver"
+import { DIDResolutionOptions, ParsedDID, Resolver, VerificationMethod, DIDResolutionResult, DIDDocument } from "./adapter"
 import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
 
@@ -246,36 +246,6 @@ declare interface EosioAccountPermission {
         actor: string
     },
     weight: number
-}
-
-declare interface ExtensibleSchema {
-    [x: string]: any // other properties possible depending on type
-}
-
-interface VerificationMethod extends ExtensibleSchema {
-    id: string;
-    type: string[] | string;
-    controller: string;
-}
-
-export interface DIDDocument {
-    '@context'?: 'https://www.w3.org/ns/did/v1' | string | string[];
-    id: string;
-    alsoKnownAs?: string[];
-    controller?: string | string[];
-    verificationMethod?: VerificationMethod[];
-    authentication?: (string | VerificationMethod)[];
-    assertionMethod?: (string | VerificationMethod)[];
-    keyAgreement?: (string | VerificationMethod)[];
-    capabilityInvocation?: (string | VerificationMethod)[];
-    capabilityDelegation?: (string | VerificationMethod)[];
-    service?: ServiceEndpoint[];
-}
-
-export interface DIDResolutionResult {
-    didResolutionMetadata: DIDResolutionMetadata;
-    didDocument: DIDDocument | null;
-    didDocumentMetadata: DIDDocumentMetadata;
 }
 
 interface Service {
