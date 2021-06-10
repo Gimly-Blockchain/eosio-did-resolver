@@ -1,9 +1,12 @@
-import { DIDResolutionOptions, ParsedDID, Resolver } from "did-resolver"
+import {
+    DIDResolutionOptions, ParsedDID, Resolver, DIDResolutionResult, DIDDocument,
+    ServiceEndpoint
+} from "did-resolver"
 import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
 import {
     EosioAccountPermission, EosioAccountResponse,
-    DIDDocument, DIDResolutionResult, Service, Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
+    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
 } from "./types"
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
@@ -64,7 +67,7 @@ async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, 
     return null
 }
 
-function findServices(service: Array<Service>, type: string): Array<Service> {
+function findServices(service: Array<ServiceEndpoint>, type: string): Array<ServiceEndpoint> {
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
@@ -103,7 +106,7 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
         }
 
         if (permission.parent !== "") {
-            method.relationshipParent = did + "#" + permission.parent;
+            method.relationshipParent = [did + "#" + permission.parent];
         }
 
         let i = 0;
@@ -116,7 +119,7 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
         }
 
         for (const account of permission.required_auth.accounts) {
-            method.verificationMethod.push({
+            method.conditionWeightedThreshold.push({
                 condition: createAccountMethod(baseId, methodId, i, did, account),
                 weight: account.weight,
             });

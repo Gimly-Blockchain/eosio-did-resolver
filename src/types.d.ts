@@ -103,25 +103,6 @@ interface VerifiableConditionMethod extends VerificationMethod {
     relationshipSibling?: string[];
 }
 
-export interface DIDDocument {
-    '@context'?: 'https://www.w3.org/ns/did/v1' | string | string[];
-    id: string;
-    alsoKnownAs?: string[];
-    controller?: string | string[];
-    verificationMethod?: VerificationMethod[];
-    authentication?: (string | VerificationMethod)[];
-    assertionMethod?: (string | VerificationMethod)[];
-    keyAgreement?: (string | VerificationMethod)[];
-    capabilityInvocation?: (string | VerificationMethod)[];
-    capabilityDelegation?: (string | VerificationMethod)[];
-    service?: ServiceEndpoint[];
-}
-
-export interface DIDResolutionResult {
-    didResolutionMetadata: DIDResolutionMetadata;
-    didDocument: DIDDocument | null;
-    didDocumentMetadata: DIDDocumentMetadata;
-}
 
 interface Service {
     id: string,
