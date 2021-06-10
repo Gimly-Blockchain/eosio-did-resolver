@@ -65,13 +65,12 @@ function findServices(service: Array<Service>, type: string): Array<Service> {
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
-function createKeyMethod(baseId: string, i: number, did: string, key: EosioKeyType): VerificationMethod {
+function createKeyMethod(baseId: string, i: number, did: string): VerificationMethod {
     const keyType = "EcdsaSecp256k1VerificationKey2019"; // TODO support k1, r1 and wa types
     const keyMethod: VerificationMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: keyType,
-        weight: key.weight
+        type: keyType
     }
     keyMethod.publicKeyJwk = {}; // TODO
     return keyMethod;
@@ -82,40 +81,42 @@ function createAccountMethod(baseId: string, methodId: MethodId, i: number, did:
     const accountMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: ["VerifiableCondition", "VerifiableConditionDelegated"],
-        weight: account.weight,
-        delegatedIdUrl: delegatedChain + ":" + account.permission.actor + "#" + account.permission.permission
+        type: "VerifiableCondition",
+        conditionDelegated: delegatedChain + ":" + account.permission.actor + "#" + account.permission.permission
     }
     return accountMethod;
 }
 
 function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioAccountResponse): DIDDocument {
-
     const verificationMethod = [];
     for (const permission of eosioAccount.permissions) {
         const baseId = did + "#" + permission.perm_name;
-        const type = ["VerifiableCondition", "VerifiableConditionWeightedThreshold"];
         const method: VerificationMethod = {
             id: baseId,
             controller: did,
-            type,
+            type: "VerifiableCondition",
             threshold: permission.required_auth.threshold,
-            verificationMethod: []
+            conditionWeightedThreshold: []
         }
 
         if (permission.parent !== "") {
-            type.push("VerifiableConditionRelationship");
-            method.parentIdUrl = did + "#" + permission.parent;
+            method.relationshipParent = did + "#" + permission.parent;
         }
 
         let i = 0;
         for (const key of permission.required_auth.keys) {
-            method.verificationMethod.push(createKeyMethod(baseId, i, did, key));
+            method.conditionWeightedThreshold.push({
+                condition: createKeyMethod(baseId, i, did),
+                weight: key.weight
+            });
             i++;
         }
 
         for (const account of permission.required_auth.accounts) {
-            method.verificationMethod.push(createAccountMethod(baseId, methodId, i, did, account));
+            method.verificationMethod.push({
+                condition: createAccountMethod(baseId, methodId, i, did, account),
+                weight: account.weight,
+            });
             i++;
         }
 
