@@ -92,6 +92,17 @@ interface VerificationMethod extends ExtensibleSchema {
     controller: string;
 }
 
+interface VerifiableConditionMethod extends VerificationMethod {
+    conditionWeightedThreshold?: VerificationMethod[];
+    conditionThreshold?: VerificationMethod[];
+    conditionAnd?: VerificationMethod[];
+    conditionOr?: VerificationMethod[];
+    conditionDelegated?: string;
+    relationshipParent?: string[];
+    relationshipChild?: string[];
+    relationshipSibling?: string[];
+}
+
 export interface DIDDocument {
     '@context'?: 'https://www.w3.org/ns/did/v1' | string | string[];
     id: string;

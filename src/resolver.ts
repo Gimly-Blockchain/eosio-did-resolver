@@ -3,7 +3,7 @@ import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
 import {
     EosioAccountPermission, EosioAccountResponse,
-    DIDDocument, DIDResolutionResult, Service, Entry, Registry, MethodId, VerificationMethod
+    DIDDocument, DIDResolutionResult, Service, Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
 } from "./types"
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
@@ -91,7 +91,7 @@ function createAccountMethod(baseId: string, methodId: MethodId, i: number, did:
 }
 
 function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioAccountResponse): DIDDocument {
-    const verificationMethod = [];
+    const verificationMethod: VerifiableConditionMethod[] = [];
     for (const permission of eosioAccount.permissions) {
         const baseId = did + "#" + permission.perm_name;
         const method: VerificationMethod = {
