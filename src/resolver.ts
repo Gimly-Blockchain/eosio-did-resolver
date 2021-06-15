@@ -1,6 +1,13 @@
-import { DIDResolutionOptions, ParsedDID, Resolver, ServiceEndpoint, DIDResolutionMetadata, DIDDocumentMetadata } from "did-resolver"
+import {
+    DIDResolutionOptions, ParsedDID, Resolver, DIDResolutionResult, DIDDocument,
+    ServiceEndpoint
+} from "did-resolver"
 import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
+import {
+    EosioAccountPermission, EosioAccountResponse,
+    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
+} from "./types"
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
 
@@ -19,7 +26,6 @@ function getResolutionError(error: string): DIDResolutionResult {
 }
 
 function checkDID(parsed: ParsedDID, registry: Registry): MethodId | undefined {
-
     // findChainByName
     const partsName = parsed.id.match(CHAIN_NAME);
     if (partsName) {
@@ -61,17 +67,16 @@ async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, 
     return null
 }
 
-function findServices(service: Array<Service>, type: string): Array<Service> {
+function findServices(service: Array<ServiceEndpoint>, type: string): Array<ServiceEndpoint> {
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
-function createKeyMethod(baseId: string, i: number, did: string, key: EosioKeyType): VerificationMethod {
+function createKeyMethod(baseId: string, i: number, did: string): VerificationMethod {
     const keyType = "EcdsaSecp256k1VerificationKey2019"; // TODO support k1, r1 and wa types
     const keyMethod: VerificationMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: keyType,
-        weight: key.weight
+        type: keyType
     }
     keyMethod.publicKeyJwk = {}; // TODO
     return keyMethod;
@@ -82,40 +87,42 @@ function createAccountMethod(baseId: string, methodId: MethodId, i: number, did:
     const accountMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: ["VerifiableCondition", "VerifiableConditionDelegated"],
-        weight: account.weight,
-        delegatedIdUrl: delegatedChain + ":" + account.permission.actor + "#" + account.permission.permission
+        type: "VerifiableCondition",
+        conditionDelegated: delegatedChain + ":" + account.permission.actor + "#" + account.permission.permission
     }
     return accountMethod;
 }
 
 function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioAccountResponse): DIDDocument {
-
-    const verificationMethod = [];
+    const verificationMethod: VerifiableConditionMethod[] = [];
     for (const permission of eosioAccount.permissions) {
         const baseId = did + "#" + permission.perm_name;
-        const type = ["VerifiableCondition", "VerifiableConditionWeightedThreshold"];
         const method: VerificationMethod = {
             id: baseId,
             controller: did,
-            type,
+            type: "VerifiableCondition",
             threshold: permission.required_auth.threshold,
-            verificationMethod: []
+            conditionWeightedThreshold: []
         }
 
         if (permission.parent !== "") {
-            type.push("VerifiableConditionRelationship");
-            method.parentIdUrl = did + "#" + permission.parent;
+            method.relationshipParent = [did + "#" + permission.parent];
         }
 
         let i = 0;
         for (const key of permission.required_auth.keys) {
-            method.verificationMethod.push(createKeyMethod(baseId, i, did, key));
+            method.conditionWeightedThreshold.push({
+                condition: createKeyMethod(baseId, i, did),
+                weight: key.weight
+            });
             i++;
         }
 
         for (const account of permission.required_auth.accounts) {
-            method.verificationMethod.push(createAccountMethod(baseId, methodId, i, did, account));
+            method.conditionWeightedThreshold.push({
+                condition: createAccountMethod(baseId, methodId, i, did, account),
+                weight: account.weight,
+            });
             i++;
         }
 
@@ -164,136 +171,4 @@ export async function resolve(
         didDocument: didDoc,
         didDocumentMetadata: {}
     }
-}
-
-interface EosioAccountResponse {
-    account_name: string,
-    head_block_num: number,
-    head_block_time: string,
-    privileged: boolean,
-    last_code_update: string,
-    created: string,
-    core_liquid_balance: string,
-    ram_quota: number,
-    net_weight: number,
-    cpu_weight: number,
-    net_limit: {
-        used: number,
-        available: number,
-        max: number,
-    },
-    cpu_limit: {
-        used: number,
-        available: number,
-        max: number,
-    },
-    ram_usage: number,
-    permissions: [{
-        perm_name: string,
-        parent: string,
-        required_auth: {
-            threshold: number,
-            keys: [EosioKeyType],
-            accounts: [EosioAccountPermission],
-            waits: [{
-                wait_sec: number,
-                weight: number
-            }],
-        }
-    }],
-    total_resources: {
-        owner: string,
-        net_weight: string,
-        cpu_weight: string,
-        ram_bytes: number,
-    },
-    self_delegated_bandwidth: {
-        from: string,
-        to: string,
-        net_weight: string,
-        cpu_weight: string,
-    },
-    refund_request: {
-        owner: string,
-        request_time: string,
-        net_amount: string,
-        cpu_amount: string
-    },
-    voter_info: {
-        owner: string,
-        proxy: string,
-        producers: [string],
-        staked: number,
-        last_stake: number,
-        last_vote_weight: string,
-        proxied_vote_weight: string,
-        is_proxy: number,
-        flags1: number,
-        reserved2: number,
-        reserved3: string,
-    },
-    rex_info: any,
-}
-
-declare interface EosioKeyType {
-    key: string,
-    weight: number,
-}
-
-declare interface EosioAccountPermission {
-    permission: {
-        permission: string,
-        actor: string
-    },
-    weight: number
-}
-
-declare interface ExtensibleSchema {
-    [x: string]: any // other properties possible depending on type
-}
-
-interface VerificationMethod extends ExtensibleSchema {
-    id: string;
-    type: string[] | string;
-    controller: string;
-}
-
-export interface DIDDocument {
-    '@context'?: 'https://www.w3.org/ns/did/v1' | string | string[];
-    id: string;
-    alsoKnownAs?: string[];
-    controller?: string | string[];
-    verificationMethod?: VerificationMethod[];
-    authentication?: (string | VerificationMethod)[];
-    assertionMethod?: (string | VerificationMethod)[];
-    keyAgreement?: (string | VerificationMethod)[];
-    capabilityInvocation?: (string | VerificationMethod)[];
-    capabilityDelegation?: (string | VerificationMethod)[];
-    service?: ServiceEndpoint[];
-}
-
-export interface DIDResolutionResult {
-    didResolutionMetadata: DIDResolutionMetadata;
-    didDocument: DIDDocument | null;
-    didDocumentMetadata: DIDDocumentMetadata;
-}
-
-interface Service {
-    id: string,
-    type: string,
-    serviceEndpoint: string
-}
-
-interface Entry {
-    chainId: string,
-    service: Service[]
-}
-
-export interface Registry {
-    [chainName: string]: Entry;
-}
-
-interface MethodId {
-    chain: Entry,
-    subject: string
 }
