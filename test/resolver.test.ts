@@ -1,7 +1,9 @@
 import { Resolver } from 'did-resolver'
 import { getResolver } from '../src/index';
 
-describe('EOSIO resolver', async () => {
+jest.setTimeout(10000)
+
+describe('EOSIO resolver', () => {
   const resolver = new Resolver(getResolver());
 
   it('Resolve a complex EOS DID Document', async () => {
@@ -12,7 +14,7 @@ describe('EOSIO resolver', async () => {
   })
 
   it('Resolve a jungle testnet DID Document', async () => {
-    const jungleDid = 'did:eosio:eos:jungle:lioninjungle';
+    const jungleDid = 'did:eosio:eos:testnet:jungle:lioninjungle';
     console.log('Resolving ' + jungleDid);
     const jungleDidDocument = await resolver.resolve(jungleDid);
     console.log('DID Document:', jungleDidDocument);
