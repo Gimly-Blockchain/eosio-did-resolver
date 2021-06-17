@@ -2,7 +2,7 @@
 
 The EOSIO Identity Working Group is an open working group where we, the EOSIO community, discuss identity on EOSIO chains and progress work such as this DID specification and it's implementation. We have a weekly meeting and a Slack channel.
 
-**[Join the EOSIO Identity Working Group](https://www.gimly.io/eosio-id-wg)**
+**[Join the EOSIO Identity Working Group](https://www.gimly.io/eosio-identity)**
 
 Comments regarding this document are welcome. Please file issues and PRs directly on Github. Contributors are recognized through adding commits to the code base.
 
@@ -94,8 +94,7 @@ async function resolve() {
             {
                 id: "https://eos.greymass.com",
                 type: [
-                    LinkedDomains,
-                    EosioNodeos
+                    LinkedDomains
                 ],
                 serviceEndpoint: "https://eos.greymass.com"
             }
