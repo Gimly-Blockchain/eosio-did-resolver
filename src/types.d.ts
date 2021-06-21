@@ -121,6 +121,7 @@ export interface Registry {
 
 export interface Jwk {
     crv: string,
+    kty: string,
     x: string,
     y: string,
     kid: string

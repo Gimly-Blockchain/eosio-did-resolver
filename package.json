@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "@types/elliptic": "^6.4.12",
+    "base64url": "^3.0.1",
     "eosjs": "^21.0.4",
     "node-fetch": "^2.6.1"
   }
