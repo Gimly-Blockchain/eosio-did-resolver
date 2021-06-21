@@ -6,7 +6,7 @@ import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
 import {
     EosioAccountPermission, EosioAccountResponse,
-    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
+    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod, Jwk
 } from "./types"
 import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
 import { KeyType } from "eosjs/dist/eosjs-numeric";
@@ -75,10 +75,10 @@ function findServices(service: Array<ServiceEndpoint>, type: string): Array<Serv
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
-function keyTypeToString(type: KeyType) : string {
+function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationMethodType: string } {
     switch(type) {
         case KeyType.k1:
-            return "EcdsaSecp256k1VerificationKey2019";
+            return { jwkCurve: "secp256k1", verificationMethodType: "EcdsaSecp256k1VerificationKey2019" };
     }
 
     throw new Error("Key type not supported");
@@ -90,16 +90,19 @@ function createKeyMethod(baseId: string, i: number, did: string, key: string): V
 
     if (!pubKey.isValid()) throw new Error("Key is not valid");
     
-    const publicKeyJwk = {
-        x: ecPubKey.getPublic().getX(),
-        y: ecPubKey.getPublic().getY(),
-        kid: key
+    const { jwkCurve, verificationMethodType } = getCurveNamesFromType(pubKey.getType());
+
+    const publicKeyJwk: Jwk = {
+        crv: jwkCurve,
+        x: ecPubKey.getPublic().getX().toString(),
+        y: ecPubKey.getPublic().getY().toString(),
+        kid: pubKey.toString()
     };
 
     const keyMethod: VerificationMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: keyTypeToString(pubKey.getType()),
+        type: verificationMethodType,
         publicKeyJwk
     }
 

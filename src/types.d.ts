@@ -119,6 +119,13 @@ export interface Registry {
     [chainName: string]: Entry;
 }
 
+export interface Jwk {
+    crv: string,
+    x: string,
+    y: string,
+    kid: string
+}
+
 interface MethodId {
     chain: Entry,
     subject: string
