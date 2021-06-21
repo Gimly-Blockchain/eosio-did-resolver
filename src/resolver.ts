@@ -8,6 +8,9 @@ import {
     EosioAccountPermission, EosioAccountResponse,
     Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
 } from "./types"
+import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
+import { KeyType } from "eosjs/dist/eosjs-numeric";
+import { ec } from "elliptic";
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
 
@@ -61,7 +64,8 @@ async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, 
         try {
             return await rpc.get_account(methodId.subject)
         } catch (e) {
-            //try other services in case of error.
+            throw e;
+            // TODO try other services in case of error.
         }
     }
     return null
@@ -71,14 +75,34 @@ function findServices(service: Array<ServiceEndpoint>, type: string): Array<Serv
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
-function createKeyMethod(baseId: string, i: number, did: string): VerificationMethod {
-    const keyType = "EcdsaSecp256k1VerificationKey2019"; // TODO support k1, r1 and wa types
+function keyTypeToString(type: KeyType) : string {
+    switch(type) {
+        case KeyType.k1:
+            return "EcdsaSecp256k1VerificationKey2019";
+    }
+
+    throw new Error("Key type not supported");
+}
+
+function createKeyMethod(baseId: string, i: number, did: string, key: string): VerificationMethod {
+    const pubKey = PublicKey.fromString(key);
+    const ecPubKey: ec.KeyPair= pubKey.toElliptic();
+
+    if (!pubKey.isValid()) throw new Error("Key is not valid");
+    
+    const publicKeyJwk = {
+        x: ecPubKey.getPublic().getX(),
+        y: ecPubKey.getPublic().getY(),
+        kid: key
+    };
+
     const keyMethod: VerificationMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: keyType
+        type: keyTypeToString(pubKey.getType()),
+        publicKeyJwk
     }
-    keyMethod.publicKeyJwk = {}; // TODO
+
     return keyMethod;
 }
 
@@ -112,7 +136,7 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
         let i = 0;
         for (const key of permission.required_auth.keys) {
             method.conditionWeightedThreshold.push({
-                condition: createKeyMethod(baseId, i, did),
+                condition: createKeyMethod(baseId, i, did, key.key),
                 weight: key.weight
             });
             i++;
