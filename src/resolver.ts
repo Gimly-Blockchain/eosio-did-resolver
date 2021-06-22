@@ -2,11 +2,10 @@ import {
     DIDResolutionOptions, ParsedDID, Resolver, DIDResolutionResult, DIDDocument,
     ServiceEndpoint
 } from "did-resolver"
-import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
 import {
     EosioAccountPermission, EosioAccountResponse,
-    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod, Jwk
+    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod, Jwk, ExtensibleSchema
 } from "./types"
 import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
 import { KeyType } from "eosjs/dist/eosjs-numeric";
@@ -58,15 +57,19 @@ function checkDID(parsed: ParsedDID, registry: Registry): MethodId | undefined {
 }
 
 async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, options: DIDResolutionOptions): Promise<EosioAccountResponse | null> {
-    const serviceType = 'LinkedDomains'
-    const services = findServices(methodId.chain.service, serviceType)
+    const serviceType = 'LinkedDomains';
+    const services = findServices(methodId.chain.service, serviceType);
+
     for (const service of services) {
-        const rpc = new JsonRpc(service.serviceEndpoint, { fetch })
+        const rpcOptions: ExtensibleSchema = {};
+        if (options.fetch) rpcOptions.fetch = options.fetch;
+        const rpc = new JsonRpc(service.serviceEndpoint, rpcOptions)
+
         try {
             return await rpc.get_account(methodId.subject)
         } catch (e) {
-            throw e;
-            // TODO try other services in case of error.
+            console.error(e);
+            // then try other services in case of error.
         }
     }
     return null
