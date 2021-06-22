@@ -11,8 +11,7 @@ import {
 import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
 import { KeyType } from "eosjs/dist/eosjs-numeric";
 import { ec } from "elliptic";
-import base64url from "base64url";
-import BN from "bn.js";
+import { bnToBase64Url } from "./utils";
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
 
@@ -86,13 +85,6 @@ function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationM
     }
 
     throw new Error("Key type not supported");
-}
-
-// "integers are represented using the base64url encoding of their big-endian representations"
-// https://datatracker.ietf.org/doc/html/rfc7517#appendix-A.1
-function bnToBase64Url(bn: BN): string {
-    const buffer = bn.toArrayLike(Buffer, "be");
-    return base64url(buffer)
 }
 
 function createKeyMethod(baseId: string, i: number, did: string, key: string): VerificationMethod {
