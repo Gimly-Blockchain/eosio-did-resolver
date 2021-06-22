@@ -1,6 +1,5 @@
 const BNasn1 = require('asn1.js').bignum;
 import { bnToBase64Url } from '../src/utils';
-//	Buffer = require('safe-buffer').Buffer;
 import BN from "bn.js";
 
 // copied from https://github.com/Brightspace/node-jwk-to-pem/blob/master/src/b64-to-bn.js
