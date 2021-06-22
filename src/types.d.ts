@@ -115,6 +115,10 @@ interface Entry {
     service: Service[]
 }
 
+export interface EOSIODIDResolutionOptions extends DIDResolutionOptions {
+    fetch?: any
+}
+
 export interface Registry {
     [chainName: string]: Entry;
 }
