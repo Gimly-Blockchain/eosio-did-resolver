@@ -6,8 +6,12 @@ import fetch from "node-fetch"
 import { JsonRpc } from "eosjs"
 import {
     EosioAccountPermission, EosioAccountResponse,
-    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod
+    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod, Jwk
 } from "./types"
+import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
+import { KeyType } from "eosjs/dist/eosjs-numeric";
+import { ec } from "elliptic";
+import { bnToBase64Url } from "./utils";
 
 const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
 
@@ -61,7 +65,8 @@ async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, 
         try {
             return await rpc.get_account(methodId.subject)
         } catch (e) {
-            //try other services in case of error.
+            throw e;
+            // TODO try other services in case of error.
         }
     }
     return null
@@ -71,14 +76,40 @@ function findServices(service: Array<ServiceEndpoint>, type: string): Array<Serv
     return service.filter((s) => Array.isArray(s.type) ? s.type.includes(type) : s.type === type)
 }
 
-function createKeyMethod(baseId: string, i: number, did: string): VerificationMethod {
-    const keyType = "EcdsaSecp256k1VerificationKey2019"; // TODO support k1, r1 and wa types
+function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationMethodType: string } {
+    switch (type) {
+        case KeyType.k1:
+            return { jwkCurve: "secp256k1", verificationMethodType: "EcdsaSecp256k1VerificationKey2019" };
+        case KeyType.r1:
+            return { jwkCurve: "P-256", verificationMethodType: "JsonWebKey2020" }
+    }
+
+    throw new Error("Key type not supported");
+}
+
+function createKeyMethod(baseId: string, i: number, did: string, key: string): VerificationMethod {
+    const pubKey = PublicKey.fromString(key);
+    const ecPubKey: ec.KeyPair = pubKey.toElliptic();
+
+    if (!pubKey.isValid()) throw new Error("Key is not valid");
+
+    const { jwkCurve, verificationMethodType } = getCurveNamesFromType(pubKey.getType());
+
+    const publicKeyJwk: Jwk = {
+        crv: jwkCurve,
+        kty: "EC",
+        x: bnToBase64Url(ecPubKey.getPublic().getX()),
+        y: bnToBase64Url(ecPubKey.getPublic().getY()),
+        kid: pubKey.toString()
+    };
+
     const keyMethod: VerificationMethod = {
         id: baseId + "-" + i,
         controller: did,
-        type: keyType
+        type: verificationMethodType,
+        publicKeyJwk
     }
-    keyMethod.publicKeyJwk = {}; // TODO
+
     return keyMethod;
 }
 
@@ -112,7 +143,7 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
         let i = 0;
         for (const key of permission.required_auth.keys) {
             method.conditionWeightedThreshold.push({
-                condition: createKeyMethod(baseId, i, did),
+                condition: createKeyMethod(baseId, i, did, key.key),
                 weight: key.weight
             });
             i++;
@@ -130,7 +161,7 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
     }
 
     const doc = {
-        "@context": ["https://www.w3.org/ns/did/v1"],
+        "@context": ["https://www.w3.org/ns/did/v1", "https://w3c-ccg.github.io/verifiable-conditions/contexts/verifiable-conditions-2021-v1.json"],
         id: did,
         verificationMethod,
         service: methodId.chain.service

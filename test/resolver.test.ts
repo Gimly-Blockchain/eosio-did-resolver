@@ -10,21 +10,21 @@ describe('EOSIO resolver', () => {
     const eoscanadacomDid = 'did:eosio:eos:eoscanadacom';
     console.log('Resolving ' + eoscanadacomDid);
     const eosDidDocument = await resolver.resolve(eoscanadacomDid);
-    console.log('DID Document:', eosDidDocument);
+    console.log('DID Document: ', JSON.stringify(eosDidDocument, null, 2));
   })
 
   it('Resolve a jungle testnet DID Document', async () => {
     const jungleDid = 'did:eosio:eos:testnet:jungle:lioninjungle';
     console.log('Resolving ' + jungleDid);
     const jungleDidDocument = await resolver.resolve(jungleDid);
-    console.log('DID Document:', jungleDidDocument);
+    console.log('DID Document: ', JSON.stringify(jungleDidDocument, null, 2));
   })
 
   it('Resolve a chain-id based DID Document', async () => {
     const telosDid = 'did:eosio:4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11:caleosblocks';
     console.log('Resolving ' + telosDid);
     const telosDidDocument = await resolver.resolve(telosDid);
-    console.log('DID Document:', telosDidDocument);
+    console.log('DID Document: ', JSON.stringify(telosDidDocument, null, 2));
   })
 
   it('Fail to resolve an invalid DID', async () => {
@@ -34,7 +34,7 @@ describe('EOSIO resolver', () => {
       const invalidDidDocument = await resolver.resolve(invalidDid);
       console.log('DID Document:', invalidDidDocument);
     } catch (e) {
-      console.log('Error resolving DID:', e.what());
+      console.log('Error resolving DID:', e);
     }
   })
 
@@ -45,7 +45,7 @@ describe('EOSIO resolver', () => {
       const nonExistantDidDocument = await resolver.resolve(nonExistantDid);
       console.log('DID Document:', nonExistantDidDocument);
     } catch (e) {
-      console.log('Error resolving DID:', e.what());
+      console.log('Error resolving DID:', e);
     }
   })
 
