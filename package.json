@@ -60,6 +60,7 @@
     "asn1.js": "^5.4.1",
     "did-resolver": "^3.1.0",
     "husky": "^6.0.0",
+    "node-fetch": "^2.6.1",
     "size-limit": "^4.10.2",
     "tsdx": "^0.14.1",
     "tslib": "^2.2.0",
@@ -68,7 +69,6 @@
   "dependencies": {
     "@types/elliptic": "^6.4.12",
     "base64url": "^3.0.1",
-    "eosjs": "^21.0.4",
-    "node-fetch": "^2.6.1"
+    "eosjs": "^21.0.4"
   }
 }
