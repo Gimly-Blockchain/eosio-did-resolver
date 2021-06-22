@@ -77,7 +77,7 @@ function findServices(service: Array<ServiceEndpoint>, type: string): Array<Serv
 }
 
 function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationMethodType: string } {
-    switch(type) {
+    switch (type) {
         case KeyType.k1:
             return { jwkCurve: "secp256k1", verificationMethodType: "EcdsaSecp256k1VerificationKey2019" };
         case KeyType.r1:
@@ -89,10 +89,10 @@ function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationM
 
 function createKeyMethod(baseId: string, i: number, did: string, key: string): VerificationMethod {
     const pubKey = PublicKey.fromString(key);
-    const ecPubKey: ec.KeyPair= pubKey.toElliptic();
+    const ecPubKey: ec.KeyPair = pubKey.toElliptic();
 
     if (!pubKey.isValid()) throw new Error("Key is not valid");
-    
+
     const { jwkCurve, verificationMethodType } = getCurveNamesFromType(pubKey.getType());
 
     const publicKeyJwk: Jwk = {
@@ -161,7 +161,7 @@ function createDIDDocument(methodId: MethodId, did: string, eosioAccount: EosioA
     }
 
     const doc = {
-        "@context": ["https://www.w3.org/ns/did/v1"],
+        "@context": ["https://www.w3.org/ns/did/v1", "https://w3c-ccg.github.io/verifiable-conditions/contexts/verifiable-conditions-2021-v1.json"],
         id: did,
         verificationMethod,
         service: methodId.chain.service

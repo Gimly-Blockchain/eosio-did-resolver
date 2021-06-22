@@ -50,21 +50,69 @@ The did resolver takes the EOSIO account name and retreives it's permission data
 
 ```json
 {
-    "@context": ["https://www.w3.org/ns/did/v1", 
-        "https://raw.githubusercontent.com/Gimly-Blockchain/eosio-did-spec/master/eosio-did-context.json"],
-    "id": "did:eosio:telos:example",
-    "verificationMethod": [{
-        "id": "did:eosio:telos:example#owner",
-        "controller": "did:eosio:telos:example",
-        "type": "Ed25519VerificationKey",
-        "publicKeyBase58": "7idX86zQ6M3mrzkGQ9MGHf4btSECmcTj4i8Le59ga7CpSpZYy5"
-    }, {
-        "id": "did:eosio:telos:example#active",
-        "controller": "did:eosio:telos:example",
-        "type": ["VerifiableCondition", "VerifiableConditionRelationship", "Ed25519VerificationKey"],
-        "parentIdUrl": "did:eosio:telos:example#owner",
-        "publicKeyBase58": "7NFuBesBKK5XHHLtzFxm7S57Eq11gUtndrsvq3Mt3XZNMTHfqc"
-    }]
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3c-ccg.github.io/verifiable-conditions/contexts/verifiable-conditions-2021-v1.json"
+    ],
+    "id": "did:eosio:eos:testnet:jungle:lioninjungle",
+    "verificationMethod": [
+        {
+            "id": "did:eosio:eos:testnet:jungle:lioninjungle#active",
+            "controller": "did:eosio:eos:testnet:jungle:lioninjungle",
+            "type": "VerifiableCondition",
+            "threshold": 1,
+            "conditionWeightedThreshold": [
+                {
+                    "condition": {
+                        "id": "did:eosio:eos:testnet:jungle:lioninjungle#active-0",
+                        "controller": "did:eosio:eos:testnet:jungle:lioninjungle",
+                        "type": "EcdsaSecp256k1VerificationKey2019",
+                        "publicKeyJwk": {
+                            "crv": "secp256k1",
+                            "kty": "EC",
+                            "x": "jbXSqQffgSNrtF4SBriENexUuXstjPDRFV_3PRCFU7o",
+                            "y": "J20YqTFJgZ3P5KXZBEcOmWX-Nxaqogtt4NyWtvx8Ryk",
+                            "kid": "PUB_K1_7ueKyvQJpBLVjuNgLedAgJakw3bLyd4GBx1N4jXswpBhE5SbJK"
+                        }
+                    },
+                    "weight": 1
+                }
+            ],
+            "relationshipParent": [
+                "did:eosio:eos:testnet:jungle:lioninjungle#owner"
+            ]
+        },
+        {
+            "id": "did:eosio:eos:testnet:jungle:lioninjungle#owner",
+            "controller": "did:eosio:eos:testnet:jungle:lioninjungle",
+            "type": "VerifiableCondition",
+            "threshold": 1,
+            "conditionWeightedThreshold": [
+                {
+                    "condition": {
+                        "id": "did:eosio:eos:testnet:jungle:lioninjungle#owner-0",
+                        "controller": "did:eosio:eos:testnet:jungle:lioninjungle",
+                        "type": "EcdsaSecp256k1VerificationKey2019",
+                        "publicKeyJwk": {
+                            "crv": "secp256k1",
+                            "kty": "EC",
+                            "x": "jbXSqQffgSNrtF4SBriENexUuXstjPDRFV_3PRCFU7o",
+                            "y": "J20YqTFJgZ3P5KXZBEcOmWX-Nxaqogtt4NyWtvx8Ryk",
+                            "kid": "PUB_K1_7ueKyvQJpBLVjuNgLedAgJakw3bLyd4GBx1N4jXswpBhE5SbJK"
+                        }
+                    },
+                    "weight": 1
+                }
+            ]
+        }
+    ],
+    "service": [
+        {
+            "id": "https://jungle3.cryptolions.io",
+            "type": "LinkedDomains",
+            "serviceEndpoint": "https://jungle3.cryptolions.io"
+        }
+    ]
 }
 ```
 
