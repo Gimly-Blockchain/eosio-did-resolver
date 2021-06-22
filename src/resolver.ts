@@ -1,11 +1,11 @@
 import {
-    DIDResolutionOptions, ParsedDID, Resolver, DIDResolutionResult, DIDDocument,
+    ParsedDID, Resolver, DIDResolutionResult, DIDDocument,
     ServiceEndpoint
 } from "did-resolver"
 import { JsonRpc } from "eosjs"
 import {
     EosioAccountPermission, EosioAccountResponse,
-    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod, Jwk, ExtensibleSchema
+    Entry, Registry, MethodId, VerificationMethod, VerifiableConditionMethod, Jwk, ExtensibleSchema, EOSIODIDResolutionOptions
 } from "./types"
 import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
 import { KeyType } from "eosjs/dist/eosjs-numeric";
@@ -56,7 +56,7 @@ function checkDID(parsed: ParsedDID, registry: Registry): MethodId | undefined {
     return undefined
 }
 
-async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, options: DIDResolutionOptions): Promise<EosioAccountResponse | null> {
+async function fetchAccount(methodId: MethodId, did: string, parsed: ParsedDID, options: EOSIODIDResolutionOptions): Promise<EosioAccountResponse | null> {
     const serviceType = 'LinkedDomains';
     const services = findServices(methodId.chain.service, serviceType);
 
@@ -177,7 +177,7 @@ export async function resolve(
     did: string,
     parsed: ParsedDID,
     didResolver: Resolver,
-    options: DIDResolutionOptions
+    options: EOSIODIDResolutionOptions
 ): Promise<DIDResolutionResult> {
 
     const registry: Registry = {
