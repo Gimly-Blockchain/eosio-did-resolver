@@ -18,7 +18,8 @@
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "eosio-did-chain-registry"
   ],
   "engines": {
     "node": ">=10"
