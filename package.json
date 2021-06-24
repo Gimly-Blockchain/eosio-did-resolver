@@ -19,7 +19,7 @@
   "files": [
     "dist",
     "src",
-    "eosio-did-chain-registry"
+    "eosio-did-chain-registry.json"
   ],
   "engines": {
     "node": ">=10"
