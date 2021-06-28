@@ -85,6 +85,8 @@ function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationM
             return { jwkCurve: "secp256k1", verificationMethodType: "EcdsaSecp256k1VerificationKey2019" };
         case KeyType.r1:
             return { jwkCurve: "P-256", verificationMethodType: "JsonWebKey2020" }
+        case KeyType.wa:
+            return { jwkCurve: "P-256", verificationMethodType: "JsonWebKey2020" }
     }
 
     throw new Error("Key type not supported");
