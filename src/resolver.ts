@@ -11,8 +11,7 @@ import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
 import { KeyType } from "eosjs/dist/eosjs-numeric";
 import { ec } from "elliptic";
 import { bnToBase64Url } from "./utils";
-
-const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
+import eosioChainRegistry from './eosio-did-chain-registry.json';
 
 const SUBJECT_ID = `([a-z1-5.]{0,12}[a-z1-5])`;
 const CHAIN_ID = new RegExp(`^([A-Fa-f0-9]{64}):${SUBJECT_ID}$`)
@@ -86,7 +85,7 @@ function getCurveNamesFromType(type: KeyType): { jwkCurve: string, verificationM
         case KeyType.r1:
             return { jwkCurve: "P-256", verificationMethodType: "JsonWebKey2020" }
         case KeyType.wa:
-            return { jwkCurve: "P-256", verificationMethodType: "JsonWebKey2020" }
+            return { jwkCurve: "P-256", verificationMethodType: "JsonWebKey2020" }
     }
 
     throw new Error("Key type not supported");
