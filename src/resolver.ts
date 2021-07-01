@@ -22,8 +22,7 @@ import { PublicKey } from 'eosjs/dist/eosjs-key-conversions';
 import { KeyType } from 'eosjs/dist/eosjs-numeric';
 import { ec } from 'elliptic';
 import { bnToBase64Url } from './utils';
-
-const eosioChainRegistry: Registry = require('../eosio-did-chain-registry.json');
+import eosioChainRegistry from './eosio-did-chain-registry.json';
 
 const SUBJECT_ID = `([a-z1-5.]{0,12}[a-z1-5])`;
 const CHAIN_ID = new RegExp(`^([A-Fa-f0-9]{64}):${SUBJECT_ID}$`);
