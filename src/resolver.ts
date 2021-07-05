@@ -24,11 +24,30 @@ import { ec } from 'elliptic';
 import { bnToBase64Url } from './utils';
 import eosioChainRegistry from './eosio-did-chain-registry.json';
 
-const SUBJECT_ID = `([a-z1-5.]{0,12}[a-z1-5])`;
-const CHAIN_ID = new RegExp(`^([A-Fa-f0-9]{64}):${SUBJECT_ID}$`);
-const CHAIN_NAME = new RegExp(
-  `^(([a-z1-5.]{0,12}[a-z1-5])((:[a-z1-5.]{0,12}[a-z1-5])+)?):${SUBJECT_ID}$`
+const PATTERN_ACCOUNT_NAME = `([a-z1-5.]{0,12}[a-z1-5])`;
+const PATTERN_CHAIN_ID = `([A-Fa-f0-9]{64})`;
+const PATTERN_CHAIN_NAME = `(([a-z1-5.]{0,12}[a-z1-5])((:[a-z1-5.]{0,12}[a-z1-5])+)?)`;
+
+function toRegExp(pattern: string): RegExp {
+  return new RegExp(`^${pattern}$`);
+}
+
+const REGEX_ACCOUNT_NAME = toRegExp(PATTERN_ACCOUNT_NAME);
+const REGEX_CHAIN_ID = toRegExp(PATTERN_CHAIN_ID);
+const REGEX_CHAIN_NAME = toRegExp(PATTERN_CHAIN_NAME);
+const REGEX_ID_AND_SUBJECT = toRegExp(
+  `${PATTERN_CHAIN_ID}:${PATTERN_ACCOUNT_NAME}`
 );
+const REGEX_NAME_AND_SUBJECT = toRegExp(
+  `${PATTERN_CHAIN_NAME}:${PATTERN_ACCOUNT_NAME}`
+);
+
+export {
+  eosioChainRegistry,
+  REGEX_ACCOUNT_NAME,
+  REGEX_CHAIN_ID,
+  REGEX_CHAIN_NAME,
+};
 
 function getResolutionError(error: string): DIDResolutionResult {
   return {
@@ -40,7 +59,7 @@ function getResolutionError(error: string): DIDResolutionResult {
 
 function checkDID(parsed: ParsedDID, registry: Registry): MethodId | undefined {
   // findChainByName
-  const partsName = parsed.id.match(CHAIN_NAME);
+  const partsName = parsed.id.match(REGEX_NAME_AND_SUBJECT);
   if (partsName) {
     const entry = registry[partsName[1]];
     if (entry)
@@ -52,7 +71,7 @@ function checkDID(parsed: ParsedDID, registry: Registry): MethodId | undefined {
   }
 
   // findChainById
-  const partsID = parsed.id.match(CHAIN_ID);
+  const partsID = parsed.id.match(REGEX_ID_AND_SUBJECT);
   if (partsID) {
     for (let key of Object.keys(registry)) {
       const entry: Entry = registry[key];
