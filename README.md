@@ -23,6 +23,8 @@ Contributors:
 [![Digital Scarcity](./assets/digital-scarcity.jpeg)](https://digitalscarcity.io)
 ![](./assets/filler.png)
 [![rewired.one](./assets/rewired.png)](https://www.rewired.one)
+![](./assets/filler.png)
+[![Block One](./assets/block-one.png)](https://block.one)
 
 # EOSIO DID Resolver
 
