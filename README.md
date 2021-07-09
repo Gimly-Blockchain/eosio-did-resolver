@@ -12,6 +12,8 @@ Contributors:
 - Jack Tanner <jack@gimly.io>
 - Jonas Walter
 - Sebastian Montero <sebastian@m1ghty.io>
+- Sana Rauf | Block One
+- Julius Rahaus
 
 <!-- Make sure images have 75 pixel height -->
 [![Gimly](./assets/gimly.jpg)](https://gimly.io)
